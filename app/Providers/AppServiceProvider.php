@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Core\Infra\SmalotFileBarcodeExtractor;
+use App\Core\Infra\GoogleVisionFileBarcodeExtractor;
 use App\Core\Services\ExtractBarcodeService;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(ExtractBarcodeService::class, function ($app) {
-            return new ExtractBarcodeService($app->make(SmalotFileBarcodeExtractor::class));
+            return new ExtractBarcodeService($app->make(GoogleVisionFileBarcodeExtractor::class));
         });
     }
 
