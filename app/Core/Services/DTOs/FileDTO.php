@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\DTOs;
+namespace App\Core\Services\DTOs;
 
 readonly class FileDTO
 {
