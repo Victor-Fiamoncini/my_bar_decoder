@@ -4,5 +4,5 @@ namespace App\Core\Services\Contracts;
 
 interface FileBarcodeExtractor
 {
-    public function extractFromFile(string $file): string;
+    public function extractFromFilePath(string $filePath): string;
 }
