@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Core\DTOs\FileDTO;
 use App\Core\Services\ExtractBarcodeService;
-use App\Core\Services\FileDto;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -20,7 +20,7 @@ class Dashboard extends Component
         $validated = $this->validate(['file' => ['required', 'file', 'mimes:pdf', 'max:5120']]);
 
         $barcode = $extractBarcodeService->execute(
-            new FileDto(
+            new FileDTO(
                 name: $validated['file']->getClientOriginalName(),
                 path: $validated['file']->getRealPath()
             )

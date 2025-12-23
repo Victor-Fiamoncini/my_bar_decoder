@@ -2,24 +2,17 @@
 
 namespace App\Core\Services;
 
+use App\Core\DTOs\FileDTO;
 use App\Core\Services\Contracts\FileBarcodeExtractor;
 
-class FileDto
+readonly class ExtractBarcodeService
 {
-    public function __construct(
-        public readonly string $name,
-        public readonly string $content,
-    ) {}
-}
+    public function __construct(private FileBarcodeExtractor $fileBarcodeExtractor) {}
 
-class ExtractBarcodeService
-{
-    public function __construct(private readonly FileBarcodeExtractor $fileBarcodeExtractor) {}
-
-    public function execute(FileDto $fileDto): ?string
+    public function execute(FileDTO $fileDTO): ?string
     {
-        $barcode = $this->fileBarcodeExtractor->extractFromFile($fileDto->content);
+        $paymentCode = $this->fileBarcodeExtractor->extractFromFilePath($fileDTO->path);
 
-        return $barcode;
+        return $paymentCode;
     }
 }
