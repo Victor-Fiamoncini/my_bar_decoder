@@ -22,7 +22,7 @@ class Dashboard extends Component
         $barcode = $extractBarcodeService->execute(
             new FileDto(
                 name: $validated['file']->getClientOriginalName(),
-                content: $validated['file']->get()
+                path: $validated['file']->getRealPath()
             )
         );
 
