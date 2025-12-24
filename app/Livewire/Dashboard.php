@@ -54,6 +54,8 @@ class Dashboard extends Component
             $this->loadDocuments();
         } catch (ExtractPaymentCodeException $e) {
             $this->addError('file', $e->getMessage());
+        } catch (\Exception $e) {
+            $this->addError('file', 'Failed to process the attached file. Please try again.');
         } finally {
             $this->reset('file');
         }
