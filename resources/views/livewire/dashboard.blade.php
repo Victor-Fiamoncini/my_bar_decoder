@@ -17,20 +17,22 @@
                 />
             </div>
 
-            <div class="flex items-center justify-start">
-                <flux:button
-                    class="cursor-pointer"
-                    type="submit"
-                    variant="primary"
-                    data-test="submit-button"
-                >
-                    {{ __('Extract Payment Code') }}
-                </flux:button>
-            </div>
+            <flux:button
+                class="cursor-pointer"
+                type="submit"
+                variant="primary"
+                data-test="submit-button"
+            >
+                {{ __('Extract Payment Code') }}
+            </flux:button>
+
+            <flux:error name="file" />
         </form>
 
         @if ($paymentCode)
-            <flux:heading size="md">{{ __('Extracted Payment Code') }}: {{ $paymentCode }}</flux:heading>
+            <flux:heading size="md">{{ __('Extracted Payment Code') }}</flux:heading>
+
+            <flux:subheading>{{ $paymentCode }}</flux:subheading>
         @endif
     </div>
 </div>

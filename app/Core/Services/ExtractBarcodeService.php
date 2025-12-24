@@ -28,6 +28,6 @@ readonly class ExtractBarcodeService
             return $paymentCode;
         }
 
-        throw new ExtractPaymentCodeException();
+        throw new ExtractPaymentCodeException;
     }
 }
