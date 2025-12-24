@@ -14,7 +14,7 @@ Web application for decoding payment codes from PDF file using PHP and Laravel f
 
 - pecl.php.net/imagick-3.8.1
 
-## Imagick Setup
+## Imagick Extension Setup
 
 ```bash
 # Install ImageMagick system libraries first
@@ -32,6 +32,21 @@ echo "extension=imagick.so" >> $(php --ini | grep "Scan for additional" | awk '{
 
 # Check if the extension is loaded
 php -m | grep imagick
+```
+
+## Development Setup (Using Laravel Sail)
+
+```bash
+cp .env.example .env
+
+# Create PostgreSQL and Laravel containers
+sail up -d
+
+# Run database migrations
+sail artisan migrate
+
+# Run Vite dev server
+sail npm run dev
 ```
 
 ----------
