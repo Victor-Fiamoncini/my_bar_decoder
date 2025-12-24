@@ -34,7 +34,18 @@
                 <flux:heading>{{ __('Extracted Payment Code') }}</flux:heading>
 
                 <div class="flex items-center justify-start gap-2 flex-wrap">
-                    <livewire:components.clipboard-button :text="$paymentCode" />
+                    <flux:button
+                        class="cursor-pointer"
+                        type="button"
+                        size="sm"
+                        variant="primary"
+                        icon="clipboard"
+                        onclick="navigator.clipboard.writeText('{{ $paymentCode }}');"
+                        title="{{ __('Copy to clipboard') }}"
+                        data-test="copy-button"
+                    >
+                        {{ __('Copy') }}
+                    </flux:button>
 
                     <flux:subheading class="break-all">{{ $paymentCode }}</flux:subheading>
                 </div>
