@@ -16,18 +16,14 @@ readonly class ExtractPaymentCodeService
      */
     public function execute(int $documentOwnerId, FileDTO $fileDTO): string
     {
-        try {
-            $paymentCode = $this->filePaymentCodeExtractor->extractFromFilePath($fileDTO->path);
+        $paymentCode = $this->filePaymentCodeExtractor->extractFromFilePath($fileDTO->path);
 
-            if ($paymentCode) {
-                $this->documentDAO->create($fileDTO->name, $paymentCode, $documentOwnerId);
+        if ($paymentCode) {
+            $this->documentDAO->create($fileDTO->name, $paymentCode, $documentOwnerId);
 
-                return $paymentCode;
-            }
-
-            throw new ExtractPaymentCodeException;
-        } catch (\Exception $e) {
-            throw new ExtractPaymentCodeException;
+            return $paymentCode;
         }
+
+        throw new ExtractPaymentCodeException;
     }
 }

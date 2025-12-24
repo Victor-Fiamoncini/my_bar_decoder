@@ -52,7 +52,7 @@ test('throws exception when payment code extraction fails', function () {
         ->shouldNotReceive('create');
 
     $this->service->execute($documentOwnerId, $fileDTO);
-})->throws(ExtractPaymentCodeException::class);
+})->throws(\Exception::class);
 
 test('does not create document when extraction returns empty string', function () {
     $documentOwnerId = 1;
