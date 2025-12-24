@@ -15,10 +15,10 @@ class Dashboard extends Component
 {
     use WithFileUploads;
 
-    #[Validate('required', message: 'The file is required')]
-    #[Validate('file', message: 'The file must be a valid file')]
-    #[Validate('mimes:pdf', message: 'The file must be a PDF')]
-    #[Validate('max:5120', message: 'The maximum file size is 5MB')]
+    #[Validate('required', message: 'An attached file is required')]
+    #[Validate('file', message: 'The attached file must be a valid file')]
+    #[Validate('mimes:pdf', message: 'The attached file must be a PDF')]
+    #[Validate('max:5120', message: 'The maximum attached file size is 5MB')]
     public $file;
 
     public string $paymentCode = '';
@@ -49,10 +49,11 @@ class Dashboard extends Component
                     path: $validated['file']->getRealPath()
                 )
             );
+
+            $this->loadDocuments();
         } catch (ExtractPaymentCodeException $e) {
             $this->addError('file', $e->getMessage());
         } finally {
-            $this->loadDocuments();
             $this->reset('file');
         }
     }
