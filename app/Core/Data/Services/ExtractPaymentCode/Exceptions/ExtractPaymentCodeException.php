@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Services\Exceptions;
+namespace App\Core\Data\Services\ExtractPaymentCode\Exceptions;
 
 class ExtractPaymentCodeException extends \Exception
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core\Services\Contracts;
+namespace App\Core\Data\Adapter;
 
-interface FileBarcodeExtractor
+interface FilePaymentCodeExtractor
 {
     public function extractFromFilePath(string $filePath): string;
 }

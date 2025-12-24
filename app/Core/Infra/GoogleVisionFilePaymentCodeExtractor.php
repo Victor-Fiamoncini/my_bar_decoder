@@ -2,12 +2,12 @@
 
 namespace App\Core\Infra;
 
-use App\Core\Services\Contracts\FileBarcodeExtractor;
+use App\Core\Data\Adapter\FilePaymentCodeExtractor;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-readonly class GoogleVisionFileBarcodeExtractor implements FileBarcodeExtractor
+readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeExtractor
 {
     private string $googleVisionApiUrl;
 

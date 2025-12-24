@@ -2,9 +2,9 @@
 
 namespace App\Livewire;
 
-use App\Core\Services\DTOs\FileDTO;
-use App\Core\Services\Exceptions\ExtractPaymentCodeException;
-use App\Core\Services\ExtractBarcodeService;
+use App\Core\Data\Services\ExtractPaymentCode\DTOs\FileDTO;
+use App\Core\Data\Services\ExtractPaymentCode\Exceptions\ExtractPaymentCodeException;
+use App\Core\Data\Services\ExtractPaymentCode\ExtractPaymentCodeService;
 use App\Models\Document;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Validate;
@@ -38,12 +38,13 @@ class Dashboard extends Component
             ->get(['id', 'name', 'code', 'created_at']);
     }
 
-    public function submit(ExtractBarcodeService $extractBarcodeService): void
+    public function submit(ExtractPaymentCodeService $extractBarcodeService): void
     {
         $validated = $this->validate();
 
         try {
             $this->paymentCode = $extractBarcodeService->execute(
+                auth()->id(),
                 new FileDTO(
                     name: $validated['file']->getClientOriginalName(),
                     path: $validated['file']->getRealPath()
