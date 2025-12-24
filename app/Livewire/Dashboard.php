@@ -5,7 +5,7 @@ namespace App\Livewire;
 use App\Core\Services\DTOs\FileDTO;
 use App\Core\Services\Exceptions\ExtractPaymentCodeException;
 use App\Core\Services\ExtractBarcodeService;
-use App\Http\Requests\UploadDocumentRequest;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -13,18 +13,17 @@ class Dashboard extends Component
 {
     use WithFileUploads;
 
+    #[Validate('required', message: 'The file is required')]
+    #[Validate('file', message: 'The file must be a valid file')]
+    #[Validate('mimes:pdf', message: 'The file must be a PDF')]
+    #[Validate('max:5120', message: 'The maximum file size is 5MB')]
     public $file;
 
     public string $paymentCode = '';
 
     public function submit(ExtractBarcodeService $extractBarcodeService): void
     {
-        $this->paymentCode = '';
-
-        $validated = $this->validate(
-            (new UploadDocumentRequest)->rules(),
-            (new UploadDocumentRequest)->messages()
-        );
+        $validated = $this->validate();
 
         try {
             $this->paymentCode = $extractBarcodeService->execute(
