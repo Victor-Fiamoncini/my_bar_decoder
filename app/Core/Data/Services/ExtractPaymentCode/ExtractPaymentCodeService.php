@@ -7,9 +7,9 @@ use App\Core\Data\Adapter\FilePaymentCodeExtractor;
 use App\Core\Data\Services\ExtractPaymentCode\DTOs\FileDTO;
 use App\Core\Data\Services\ExtractPaymentCode\Exceptions\ExtractPaymentCodeException;
 
-readonly class ExtractPaymentCodeService
+class ExtractPaymentCodeService
 {
-    public function __construct(private FilePaymentCodeExtractor $filePaymentCodeExtractor, private DocumentDAO $documentDAO) {}
+    public function __construct(private readonly FilePaymentCodeExtractor $filePaymentCodeExtractor, private readonly DocumentDAO $documentDAO) {}
 
     /**
      * @throws ExtractPaymentCodeException
