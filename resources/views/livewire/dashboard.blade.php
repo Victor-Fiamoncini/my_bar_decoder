@@ -53,12 +53,12 @@
         @endif
     </div>
 
-    @if ($documents->isNotEmpty())
+    @if ($this->documents->isNotEmpty())
         <div class="space-y-6 w-full">
             <flux:heading size="lg">{{ __('Your Previous Documents') }}</flux:heading>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach ($documents as $document)
+                @foreach ($this->documents as $document)
                     <div class="p-6 border rounded-lg w-full">
                         <div class="space-y-2" data-test="document-card">
                             <flux:heading class="wrap-break-word">{{ $document->name }}</flux:heading>
@@ -72,6 +72,39 @@
                     </div>
                 @endforeach
             </div>
+
+            @if ($this->documents->hasPages())
+                <div class="flex items-center justify-between">
+                    <div class="flex gap-2">
+                        @if ($this->documents->onFirstPage())
+                            <flux:button class="cursor-pointer" disabled>
+                                {{ __('Previous') }}
+                            </flux:button>
+                        @else
+                            <flux:button class="cursor-pointer" wire:click="previousPage">
+                                {{ __('Previous') }}
+                            </flux:button>
+                        @endif
+
+                        @if ($this->documents->hasMorePages())
+                            <flux:button class="cursor-pointer" wire:click="nextPage">
+                                {{ __('Next') }}
+                            </flux:button>
+                        @else
+                            <flux:button class="cursor-pointer" disabled>
+                                {{ __('Next') }}
+                            </flux:button>
+                        @endif
+                    </div>
+
+                    <flux:subheading>
+                        {{ __('Page :current of :last', [
+                            'current' => $this->documents->currentPage(),
+                            'last' => $this->documents->lastPage()
+                        ]) }}
+                    </flux:subheading>
+                </div>
+            @endif
         </div>
     @endif
 </div>

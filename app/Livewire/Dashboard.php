@@ -5,15 +5,16 @@ namespace App\Livewire;
 use App\Core\Data\Services\ExtractPaymentCode\DTOs\FileDTO;
 use App\Core\Data\Services\ExtractPaymentCode\Exceptions\ExtractPaymentCodeException;
 use App\Core\Data\Services\ExtractPaymentCode\ExtractPaymentCodeService;
-use App\Models\Document;
-use Illuminate\Database\Eloquent\Collection;
+use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class Dashboard extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     #[Validate('required', message: 'An attached file is required')]
     #[Validate('file', message: 'The attached file must be a valid file')]
@@ -23,19 +24,14 @@ class Dashboard extends Component
 
     public string $paymentCode = '';
 
-    /** @var Collection<int, Document> */
-    public Collection $documents;
-
-    public function mount(): void
+    public function getDocumentsProperty(): LengthAwarePaginator
     {
-        $this->loadDocuments();
-    }
+        /** @var User $user */
+        $user = auth()->user();
 
-    public function loadDocuments(): void
-    {
-        $this->documents = Document::where('user_id', auth()->id())
+        return $user->documents()
             ->latest()
-            ->get(['id', 'name', 'code', 'created_at']);
+            ->paginate(6, ['id', 'name', 'code', 'created_at']);
     }
 
     public function submit(ExtractPaymentCodeService $extractBarcodeService): void
@@ -51,7 +47,7 @@ class Dashboard extends Component
                 )
             );
 
-            $this->loadDocuments();
+            $this->resetPage();
         } catch (ExtractPaymentCodeException $e) {
             $this->addError('file', $e->getMessage());
         } catch (\Exception $e) {
