@@ -62,24 +62,18 @@ readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeEx
      */
     private function tryConvertPdfToImage(string $pdfPath, string $imagePath): void
     {
-        try {
-            $command = sprintf(
-                'gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r300 -dFirstPage=1 -dLastPage=1 -sOutputFile=%s %s 2>&1',
-                escapeshellarg($imagePath),
-                escapeshellarg($pdfPath)
-            );
+        $command = sprintf(
+            'gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r300 -dFirstPage=1 -dLastPage=1 -sOutputFile=%s %s 2>&1',
+            escapeshellarg($imagePath),
+            escapeshellarg($pdfPath)
+        );
 
-            exec($command, $output, $returnVar);
+        exec($command, $output, $returnVar);
 
-            Log::info($returnVar, $output);
+        Log::info($returnVar, $output);
 
-            if ($returnVar !== 0 || ! file_exists($imagePath)) {
-                throw new Exception('Failed to convert PDF to PNG');
-            }
-        } catch (Throwable $t) {
-            Log::error($t->getMessage());
-
-            throw $t;
+        if ($returnVar !== 0 || ! file_exists($imagePath)) {
+            throw new Exception('Failed to convert PDF to PNG');
         }
     }
 
