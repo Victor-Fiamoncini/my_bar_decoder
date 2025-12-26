@@ -6,6 +6,7 @@ use App\Core\Data\Adapter\FilePaymentCodeExtractor;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeExtractor
 {
@@ -19,7 +20,7 @@ readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeEx
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function extractFromFilePath(string $filePath): string
     {
@@ -57,19 +58,28 @@ readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeEx
 
     /**
      * @throws Exception
+     * @throws Throwable
      */
     private function tryConvertPdfToImage(string $pdfPath, string $imagePath): void
     {
-        $command = sprintf(
-            'gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r300 -dFirstPage=1 -dLastPage=1 -sOutputFile=%s %s 2>&1',
-            escapeshellarg($imagePath),
-            escapeshellarg($pdfPath)
-        );
+        try {
+            $command = sprintf(
+                'gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r300 -dFirstPage=1 -dLastPage=1 -sOutputFile=%s %s 2>&1',
+                escapeshellarg($imagePath),
+                escapeshellarg($pdfPath)
+            );
 
-        exec($command, $output, $returnVar);
+            exec($command, $output, $returnVar);
 
-        if ($returnVar !== 0 || ! file_exists($imagePath)) {
-            throw new Exception('Failed to convert PDF to PNG');
+            Log::info($returnVar, $output);
+
+            if ($returnVar !== 0 || ! file_exists($imagePath)) {
+                throw new Exception('Failed to convert PDF to PNG');
+            }
+        } catch (Throwable $t) {
+            Log::error($t->getMessage());
+
+            throw $t;
         }
     }
 
