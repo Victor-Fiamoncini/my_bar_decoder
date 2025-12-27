@@ -10,15 +10,17 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libpq-dev \
     zip \
     unzip \
     libmagickwand-dev \
     imagemagick \
     nginx \
+    ghostscript \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
 
 # Install Imagick via PECL
 RUN pecl install imagick-3.8.1 \
