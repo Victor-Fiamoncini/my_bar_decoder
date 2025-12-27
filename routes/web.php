@@ -8,6 +8,10 @@ use App\Livewire\Settings\TwoFactor;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
+Route::get('/health', function () {
+    return response()->json(['status' => 'OK']);
+});
+
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
