@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Core\Data\Services\ExtractPaymentCode\ExtractPaymentCodeService;
 use App\Core\Infra\EloquentDocumentDAO;
 use App\Core\Infra\GoogleVisionFilePaymentCodeExtractor;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }
