@@ -39,10 +39,6 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Publish vendor assets
-RUN php artisan livewire:publish --assets \
-    && php artisan vendor:publish --tag=flux-assets --force
-
 # Install Node dependencies and build assets
 RUN npm ci && npm run build
 
