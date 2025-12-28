@@ -39,8 +39,18 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
+# Publish vendor assets
+RUN php artisan livewire:publish --assets \
+    && php artisan vendor:publish --tag=flux-assets --force
+
 # Install Node dependencies and build assets
 RUN npm ci && npm run build
+
+# Ensure vendor assets are in public directory
+RUN mkdir -p /var/www/html/public/flux \
+    && mkdir -p /var/www/html/public/livewire \
+    && cp -r /var/www/html/vendor/livewire/flux/stubs/resources/js/* /var/www/html/public/flux/ 2>/dev/null || true \
+    && cp -r /var/www/html/vendor/livewire/livewire/dist/* /var/www/html/public/livewire/ 2>/dev/null || true
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
