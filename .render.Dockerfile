@@ -44,7 +44,6 @@ RUN npm ci && npm run build
 
 # Publish Livewire/Flux assets
 RUN php artisan livewire:publish --assets
-RUN php artisan vendor:publish --tag=flux-assets --force
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
