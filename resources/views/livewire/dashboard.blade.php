@@ -22,8 +22,15 @@
                 type="submit"
                 variant="primary"
                 data-test="submit-button"
+                :disabled="!$file"
+                wire:loading.attr="disabled"
+                wire:target="file, submit"
             >
-                {{ __('Extract Payment Code') }}
+                <span wire:loading.remove wire:target="file, submit">{{ __('Extract Payment Code') }}</span>
+
+                <span wire:loading wire:target="file">{{ __('Uploading...') }}</span>
+
+                <span wire:loading wire:target="submit">{{ __('Extracting...') }}</span>
             </flux:button>
 
             <flux:error name="file" />
