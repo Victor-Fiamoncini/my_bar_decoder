@@ -37,7 +37,7 @@
         </form>
 
         @if ($paymentCode)
-            <div class="p-6 border border-green-200 rounded-lg space-y-2" data-test="payment-code-card">
+            <div class="p-6 border border-lime-500 dark:border-lime-600 rounded-lg space-y-2" data-test="payment-code-card">
                 <flux:heading>{{ __('Extracted Payment Code') }}</flux:heading>
 
                 <div class="flex items-center justify-start gap-2 flex-wrap">
@@ -114,4 +114,6 @@
             @endif
         </div>
     @endif
+
+    <x-toast />
 </div>

@@ -48,10 +48,18 @@ class Dashboard extends Component
             );
 
             $this->resetPage();
+
+            session()->flash('success', __('Payment code extracted successfully!'));
         } catch (ExtractPaymentCodeException $e) {
             $this->addError('file', $e->getMessage());
+
+            session()->flash('error', __($e->getMessage()));
         } catch (\Exception $e) {
-            $this->addError('file', 'Failed to process the attached file. Please try again.');
+            $message = 'Failed to process the attached file. Please try again.';
+
+            $this->addError('file', $message);
+
+            session()->flash('error', __($message));
         } finally {
             $this->reset('file');
         }
