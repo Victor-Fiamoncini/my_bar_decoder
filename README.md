@@ -14,12 +14,12 @@ Web application for decoding payment codes from PDF file using PHP and Laravel f
 
 - pecl.php.net/imagick-3.8.1
 
-## Imagick Extension Setup
+## Imagick Extension Setup (Debian)
 
 ```bash
 # Install ImageMagick system libraries first
 sudo apt-get update
-sudo apt-get install libmagickwand-dev imagemagick
+sudo apt-get install libmagickwand-dev imagemagick ghostscript
 
 # Install Imagick extension via PECL
 pecl install imagick
