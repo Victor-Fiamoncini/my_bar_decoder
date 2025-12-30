@@ -1,7 +1,27 @@
-# Stage 1: Build front-end assets
+# Stage 1: Pre front-end Composer dependencies
+FROM composer:2 AS composer-builder
+
+WORKDIR /app
+
+# Copy full application (artisan CLI must exist)
+COPY . .
+
+# Install dependencies
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-progress
+
+COPY . .
+
+# Stage 2: Build front-end assets
 FROM node:20-alpine AS frontend-builder
 
 WORKDIR /app
+
+# Copy FULL app including vendor from composer stage
+COPY --from=composer-builder /app /app
 
 # Copy package files first
 COPY package*.json ./
@@ -17,7 +37,7 @@ COPY public ./public
 # Run build
 RUN npm run build
 
-# Stage 2: PHP application
+# Stage 3: PHP application
 FROM php:8.4-fpm
 
 # Set working directory
