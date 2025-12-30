@@ -1,6 +1,8 @@
-# My Bar Decoder 📄
+# My Bar Decoder
 
-Web application for decoding payment codes from PDF file using PHP and Laravel framework.
+- Web application for decoding payment codes from PDF files using PHP and Laravel framework with Livewire.
+The main API used for decoding was [Google Vision API V1](https://www.google.com/aclk?sa=L&ai=DChsSEwiB_4jsquaRAxV1QEgAHfopFnwYACICCAEQABoCY2U&co=1&ase=2&gclid=CjwKCAiAjc7KBhBvEiwAE2BDOfO0O5OZHElPRG31iNloQbVU9HHBGc-RlrkW0LDc5Z60_qZd50JWAxoCUrQQAvD_BwE&cid=CAAS0wHkaPplRkGyi-pu_bPo0TJlkur-6F60aTymntTIX2Epe4zjkYhvQodBVYJm3QfWLXandJIeBlmkZO8_ZhwoPqWg3C61AAh10yJ3cbF8SdhSTG4ZhMD_TI5aiKGJp9FJMQ-M26Ff4bvOGsADFPfXgrcH6gLjg9_p9MxkGw9hEJo_wIl0grZYwZsOrgLGderttN35OFNO-ngGBIX70V2K-bqmK89q61-QqpREy8-Ct1HqxtXlFStCOjMzFPePoGO428k-US2TraQdPAyKCHmnpn2zb5KJ&cce=2&category=acrcp_v1_37&sig=AOD64_3VhbeZcYu09B3ML5Mrit9adXcumQ&q&nis=4&adurl&ved=2ahUKEwj5uYPsquaRAxXyBbkGHdvjJg0Q0Qx6BAgWEAE) which has a free plan.
+- App designed to test the Cloud platform called [Render](https://render.com) and Livewire FE library.
 
 ## Required Tools
 
