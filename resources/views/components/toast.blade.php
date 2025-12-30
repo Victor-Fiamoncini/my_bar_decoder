@@ -11,7 +11,7 @@
         }"
         x-transition
     >
-        <p class="font-semibold" x-text="message"></p>
+        <p x-text="message"></p>
     </div>
 
     @if (session()->has('success'))
