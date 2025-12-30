@@ -70,8 +70,6 @@ readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeEx
 
         exec($command, $output, $returnVar);
 
-        Log::info($returnVar, $output);
-
         if ($returnVar !== 0 || ! file_exists($imagePath)) {
             throw new Exception('Failed to convert PDF to PNG');
         }
