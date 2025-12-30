@@ -6,7 +6,7 @@
         x-on:toast.window="show = true; message = $event.detail.message; type = $event.detail.type; setTimeout(() => show = false, 3000);"
         x-show="show"
         :class="{
-            'bg-lime-500 dark:bg-lime-600 text-white': type === 'success',
+            'bg-primary text-white': type === 'success',
             'bg-red-500 dark:bg-red-600 text-white': type === 'error'
         }"
         x-transition

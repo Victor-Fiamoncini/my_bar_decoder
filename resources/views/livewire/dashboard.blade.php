@@ -1,8 +1,12 @@
 <div class="flex h-full w-full flex-1 flex-col gap-4">
     <div class="w-full space-y-6 mb-6">
-        <flux:heading size="lg">{{ __('Bar Decoder') }}</flux:heading>
+        <flux:heading size="xl">{{ __('Bar Decoder') }}</flux:heading>
 
-        <flux:subheading>{{ __('Upload a bill PDF document and we will extract its payment code.') }}</flux:subheadinga>
+        <flux:subheading size="lg">
+            {{ __('Upload a bill PDF document and we will extract its payment code') }}
+        </flux:subheadinga>
+
+        <flux:separator variant="subtle" />
 
         <form class="space-y-2" wire:submit="submit">
             <div class="flex items-center justify-start">
