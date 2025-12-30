@@ -3,10 +3,18 @@ FROM node:20-alpine AS frontend-builder
 
 WORKDIR /app
 
+# Copy package files first
 COPY package*.json ./
+
+# Install dependencies
 RUN npm ci
 
-COPY . .
+# Copy only necessary files for build (avoid copying everything)
+COPY vite.config.js ./
+COPY resources ./resources
+COPY public ./public
+
+# Run build
 RUN npm run build
 
 # Stage 2: PHP application
