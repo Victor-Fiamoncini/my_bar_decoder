@@ -8,19 +8,14 @@ use App\Livewire\Settings\TwoFactor;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::get('/health', function () {
-    return response()->json(['status' => 'OK']);
-});
+Route::get('/', fn () => view('welcome'))->name('home');
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/health', fn () => response()->json(['status' => 'Server running healthy 🎉']))
+    ->name('health');
 
-Route::get('dashboard', Dashboard::class)
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('dashboard', Dashboard::class)->name('dashboard');
 
-Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');
