@@ -22,7 +22,6 @@
             </div>
 
             <flux:button
-                class="cursor-pointer"
                 type="submit"
                 variant="primary"
                 data-test="submit-button"
@@ -46,10 +45,8 @@
 
                 <div class="flex items-center justify-start gap-2 flex-wrap">
                     <flux:button
-                        class="cursor-pointer"
-                        type="button"
                         size="sm"
-                        variant="primary"
+                        variant="filled"
                         icon="clipboard"
                         onclick="navigator.clipboard.writeText('{{ $paymentCode }}');"
                         title="{{ __('Copy to clipboard') }}"
@@ -88,21 +85,21 @@
                 <div class="flex items-center justify-between">
                     <div class="flex gap-2">
                         @if ($this->documents->onFirstPage())
-                            <flux:button class="cursor-pointer" disabled>
+                            <flux:button disabled>
                                 {{ __('Previous') }}
                             </flux:button>
                         @else
-                            <flux:button class="cursor-pointer" wire:click="previousPage">
+                            <flux:button wire:click="previousPage">
                                 {{ __('Previous') }}
                             </flux:button>
                         @endif
 
                         @if ($this->documents->hasMorePages())
-                            <flux:button class="cursor-pointer" wire:click="nextPage">
+                            <flux:button wire:click="nextPage">
                                 {{ __('Next') }}
                             </flux:button>
                         @else
-                            <flux:button class="cursor-pointer" disabled>
+                            <flux:button disabled>
                                 {{ __('Next') }}
                             </flux:button>
                         @endif
