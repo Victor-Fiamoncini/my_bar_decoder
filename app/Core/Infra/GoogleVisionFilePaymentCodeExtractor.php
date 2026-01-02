@@ -3,6 +3,7 @@
 namespace App\Core\Infra;
 
 use App\Core\Data\Adapter\FilePaymentCodeExtractor;
+use App\Core\Domain\Parsers\PaymentCodeParser;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -12,11 +13,14 @@ readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeEx
 {
     private string $googleVisionApiUrl;
 
-    public function __construct()
+    private PaymentCodeParser $paymentCodeParser;
+
+    public function __construct(PaymentCodeParser $paymentCodeParser)
     {
         $apiKey = config('services.google_vision.api_key');
 
         $this->googleVisionApiUrl = "https://vision.googleapis.com/v1/images:annotate?key={$apiKey}";
+        $this->paymentCodeParser = $paymentCodeParser;
     }
 
     /**
@@ -46,7 +50,13 @@ readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeEx
 
             $text = $response->json('responses.0.textAnnotations.0.description', '');
 
-            return $this->tryExtractPaymentCode($text);
+            $code = $this->paymentCodeParser->parseFromText($text);
+
+            if ($code) {
+                return $code;
+            }
+
+            throw new Exception('Payment code not found in extracted text');
         } catch (Exception $e) {
             Log::error($e->getMessage());
 
@@ -73,31 +83,5 @@ readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeEx
         if ($returnVar !== 0 || ! file_exists($imagePath)) {
             throw new Exception('Failed to convert PDF to PNG');
         }
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function tryExtractPaymentCode(string $text): string
-    {
-        // Try to extract DAS barcode (48 digits)
-        $dasPattern = '/(\d{11}\s*\d{1}\s*\d{11}\s*\d{1}\s*\d{11}\s*\d{1}\s*\d{11}\s*\d{1})/';
-
-        preg_match($dasPattern, $text, $matches);
-
-        if (! empty($matches)) {
-            return preg_replace('/[^\d]/', '', $matches[0]);
-        }
-
-        // Fallback to boleto pattern (47 digits)
-        $boletoPattern = '/(\d{5}[\.\s]?\d{5}[\.\s]?\d{5}[\.\s]?\d{6}[\.\s]?\d{5}[\.\s]?\d{6}[\.\s]?\d[\.\s]?\d{14})/';
-
-        preg_match($boletoPattern, $text, $matches);
-
-        if (! empty($matches)) {
-            return preg_replace('/[^\d]/', '', $matches[0]);
-        }
-
-        throw new Exception('Payment code not found in the document');
     }
 }
