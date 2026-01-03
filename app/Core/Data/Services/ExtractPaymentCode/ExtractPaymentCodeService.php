@@ -3,27 +3,32 @@
 namespace App\Core\Data\Services\ExtractPaymentCode;
 
 use App\Core\Data\Adapter\DocumentDAO;
-use App\Core\Data\Adapter\FilePaymentCodeExtractor;
+use App\Core\Data\Adapter\FileTextExtractor;
 use App\Core\Data\Services\ExtractPaymentCode\DTOs\FileDTO;
-use App\Core\Data\Services\ExtractPaymentCode\Exceptions\ExtractPaymentCodeException;
+use App\Core\Data\Services\ExtractPaymentCode\Exceptions\ExtractFileTextException;
+use App\Core\Domain\Entities\Exceptions\ExtractPaymentCodeException;
+use App\Core\Domain\Entities\PaymentCode;
 
 class ExtractPaymentCodeService
 {
-    public function __construct(private readonly FilePaymentCodeExtractor $filePaymentCodeExtractor, private readonly DocumentDAO $documentDAO) {}
+    public function __construct(private readonly FileTextExtractor $fileTextExtractor, private readonly DocumentDAO $documentDAO) {}
 
     /**
+     * @throws ExtractFileTextException
      * @throws ExtractPaymentCodeException
      */
-    public function execute(int $documentOwnerId, FileDTO $fileDTO): string
+    public function execute(int $documentOwnerId, FileDTO $fileDTO): PaymentCode
     {
-        $paymentCode = $this->filePaymentCodeExtractor->extractFromFilePath($fileDTO->path);
+        $fileText = $this->fileTextExtractor->extractFromFilePath($fileDTO->path);
 
-        if ($paymentCode) {
-            $this->documentDAO->create($fileDTO->name, $paymentCode, $documentOwnerId);
+        if ($fileText) {
+            $paymentCode = new PaymentCode($fileText);
+
+            $this->documentDAO->create($fileDTO->name, $paymentCode->code, $documentOwnerId);
 
             return $paymentCode;
         }
 
-        throw new ExtractPaymentCodeException;
+        throw new ExtractFileTextException;
     }
 }

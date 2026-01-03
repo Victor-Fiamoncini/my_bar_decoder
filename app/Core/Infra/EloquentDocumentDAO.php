@@ -5,7 +5,7 @@ namespace App\Core\Infra;
 use App\Core\Data\Adapter\DocumentDAO;
 use App\Models\Document;
 
-readonly class EloquentDocumentDAO implements DocumentDAO
+class EloquentDocumentDAO implements DocumentDAO
 {
     public function create(string $name, string $code, int $userId): void
     {

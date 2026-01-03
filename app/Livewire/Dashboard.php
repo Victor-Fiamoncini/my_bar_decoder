@@ -3,14 +3,15 @@
 namespace App\Livewire;
 
 use App\Core\Data\Services\ExtractPaymentCode\DTOs\FileDTO;
-use App\Core\Data\Services\ExtractPaymentCode\Exceptions\ExtractPaymentCodeException;
 use App\Core\Data\Services\ExtractPaymentCode\ExtractPaymentCodeService;
+use App\Core\Domain\Entities\Exceptions\ExtractPaymentCodeException;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Throwable;
 
 class Dashboard extends Component
 {
@@ -39,7 +40,7 @@ class Dashboard extends Component
         $validated = $this->validate();
 
         try {
-            $this->paymentCode = $extractBarcodeService->execute(
+            $extractedPaymentCode = $extractBarcodeService->execute(
                 auth()->id(),
                 new FileDTO(
                     name: $validated['file']->getClientOriginalName(),
@@ -47,15 +48,18 @@ class Dashboard extends Component
                 )
             );
 
+            $this->paymentCode = $extractedPaymentCode->code;
             $this->resetPage();
 
             session()->flash('success', __('Payment code extracted successfully!'));
         } catch (ExtractPaymentCodeException $e) {
-            $this->addError('file', $e->getMessage());
+            $message = 'Failed to extract payment code from the attached file.';
 
-            session()->flash('error', __($e->getMessage()));
-        } catch (\Exception $e) {
-            $message = 'Failed to process the attached file. Please try again.';
+            $this->addError('file', $message);
+
+            session()->flash('error', __($message));
+        } catch (Throwable $t) {
+            $message = 'Failed to process the attached file. Please try again later.';
 
             $this->addError('file', $message);
 

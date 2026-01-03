@@ -1,15 +1,17 @@
 <?php
 
 use App\Core\Data\Adapter\DocumentDAO;
-use App\Core\Data\Adapter\FilePaymentCodeExtractor;
+use App\Core\Data\Adapter\FileTextExtractor;
 use App\Core\Data\Services\ExtractPaymentCode\DTOs\FileDTO;
-use App\Core\Data\Services\ExtractPaymentCode\Exceptions\ExtractPaymentCodeException;
+use App\Core\Data\Services\ExtractPaymentCode\Exceptions\ExtractFileTextException;
 use App\Core\Data\Services\ExtractPaymentCode\ExtractPaymentCodeService;
+use App\Core\Domain\Entities\Exceptions\ExtractPaymentCodeException;
+use App\Core\Domain\Entities\PaymentCode;
 
 beforeEach(function () {
-    $this->filePaymentCodeExtractor = Mockery::mock(FilePaymentCodeExtractor::class);
+    $this->fileTextExtractor = Mockery::mock(FileTextExtractor::class);
     $this->documentDAO = Mockery::mock(DocumentDAO::class);
-    $this->service = new ExtractPaymentCodeService($this->filePaymentCodeExtractor, $this->documentDAO);
+    $this->service = new ExtractPaymentCodeService($this->fileTextExtractor, $this->documentDAO);
 });
 
 afterEach(function () {
@@ -19,9 +21,9 @@ afterEach(function () {
 test('successfully extracts payment code and creates document', function () {
     $documentOwnerId = 1;
     $fileDTO = new FileDTO(name: 'test.pdf', path: '/path/to/test.pdf');
-    $expectedPaymentCode = '12345678901234567890123456789012';
+    $expectedPaymentCode = '12345678901234567890123456789012345678901234567';
 
-    $this->filePaymentCodeExtractor
+    $this->fileTextExtractor
         ->shouldReceive('extractFromFilePath')
         ->once()
         ->with($fileDTO->path)
@@ -35,14 +37,15 @@ test('successfully extracts payment code and creates document', function () {
 
     $result = $this->service->execute($documentOwnerId, $fileDTO);
 
-    expect($result)->toBe($expectedPaymentCode);
+    expect($result)->toBeInstanceOf(PaymentCode::class)
+        ->and($result->code)->toBe($expectedPaymentCode);
 });
 
 test('throws exception when payment code extraction fails', function () {
     $documentOwnerId = 1;
     $fileDTO = new FileDTO(name: 'test.pdf', path: '/path/to/test.pdf');
 
-    $this->filePaymentCodeExtractor
+    $this->fileTextExtractor
         ->shouldReceive('extractFromFilePath')
         ->once()
         ->with($fileDTO->path)
@@ -58,11 +61,27 @@ test('does not create document when extraction returns empty string', function (
     $documentOwnerId = 1;
     $fileDTO = new FileDTO(name: 'test.pdf', path: '/path/to/test.pdf');
 
-    $this->filePaymentCodeExtractor
+    $this->fileTextExtractor
         ->shouldReceive('extractFromFilePath')
         ->once()
         ->with($fileDTO->path)
         ->andReturn('');
+
+    $this->documentDAO
+        ->shouldNotReceive('create');
+
+    $this->service->execute($documentOwnerId, $fileDTO);
+})->throws(ExtractFileTextException::class);
+
+test('throws exception when text does not contain valid payment code', function () {
+    $documentOwnerId = 1;
+    $fileDTO = new FileDTO(name: 'test.pdf', path: '/path/to/test.pdf');
+
+    $this->fileTextExtractor
+        ->shouldReceive('extractFromFilePath')
+        ->once()
+        ->with($fileDTO->path)
+        ->andReturn('Invalid text without payment code');
 
     $this->documentDAO
         ->shouldNotReceive('create');

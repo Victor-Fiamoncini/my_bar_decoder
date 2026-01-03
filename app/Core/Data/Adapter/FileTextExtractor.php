@@ -2,7 +2,7 @@
 
 namespace App\Core\Data\Adapter;
 
-interface FilePaymentCodeExtractor
+interface FileTextExtractor
 {
     public function extractFromFilePath(string $filePath): string;
 }

@@ -2,25 +2,21 @@
 
 namespace App\Core\Infra;
 
-use App\Core\Data\Adapter\FilePaymentCodeExtractor;
-use App\Core\Domain\Parsers\PaymentCodeParser;
+use App\Core\Data\Adapter\FileTextExtractor;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeExtractor
+class GoogleVisionFileTextExtractor implements FileTextExtractor
 {
-    private string $googleVisionApiUrl;
+    private readonly string $googleVisionApiUrl;
 
-    private PaymentCodeParser $paymentCodeParser;
-
-    public function __construct(PaymentCodeParser $paymentCodeParser)
+    public function __construct()
     {
         $apiKey = config('services.google_vision.api_key');
 
         $this->googleVisionApiUrl = "https://vision.googleapis.com/v1/images:annotate?key={$apiKey}";
-        $this->paymentCodeParser = $paymentCodeParser;
     }
 
     /**
@@ -48,19 +44,17 @@ readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeEx
                 throw new Exception('Failed to extract text content from PNG');
             }
 
-            $text = $response->json('responses.0.textAnnotations.0.description', '');
+            $fileText = $response->json('responses.0.textAnnotations.0.description', '');
 
-            $code = $this->paymentCodeParser->parseFromText($text);
-
-            if ($code) {
-                return $code;
+            if ($fileText) {
+                return $fileText;
             }
 
-            throw new Exception('Payment code not found in extracted text');
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
+            throw new Exception('Extracted file text not found');
+        } catch (Throwable $t) {
+            Log::error($t->getMessage());
 
-            throw new Exception('Failed to extract payment code');
+            throw new Exception('Failed to extract text content from file');
         } finally {
             unlink($tempImagePath);
         }
@@ -68,7 +62,6 @@ readonly class GoogleVisionFilePaymentCodeExtractor implements FilePaymentCodeEx
 
     /**
      * @throws Exception
-     * @throws Throwable
      */
     private function tryConvertPdfToImage(string $pdfPath, string $imagePath): void
     {

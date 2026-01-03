@@ -1,7 +1,8 @@
 <?php
 
-use App\Core\Data\Services\ExtractPaymentCode\Exceptions\ExtractPaymentCodeException;
 use App\Core\Data\Services\ExtractPaymentCode\ExtractPaymentCodeService;
+use App\Core\Domain\Entities\Exceptions\ExtractPaymentCodeException;
+use App\Core\Domain\Entities\PaymentCode;
 use App\Livewire\Dashboard;
 use App\Models\Document;
 use App\Models\User;
@@ -21,9 +22,11 @@ test('authenticated users can visit the dashboard', function () {
 test('user can submit a valid PDF file', function () {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
-    $paymentCode = '12345678901234567890123456789012345678901234';
+    $codeValue = '12345678901234567890123456789012345678901234567';
 
-    $this->mock(ExtractPaymentCodeService::class, function ($mock) use ($paymentCode) {
+    $this->mock(ExtractPaymentCodeService::class, function ($mock) use ($codeValue) {
+        $paymentCode = new PaymentCode($codeValue);
+
         $mock->shouldReceive('execute')->once()->andReturn($paymentCode);
     });
 
@@ -31,7 +34,7 @@ test('user can submit a valid PDF file', function () {
         ->test(Dashboard::class)
         ->set('file', $file)
         ->call('submit')
-        ->assertSet('paymentCode', $paymentCode)
+        ->assertSet('paymentCode', $codeValue)
         ->assertHasNoErrors();
 });
 
@@ -73,7 +76,7 @@ test('extraction exception displays error message', function () {
     $this->mock(ExtractPaymentCodeService::class, function ($mock) {
         $mock->shouldReceive('execute')
             ->once()
-            ->andThrow(new ExtractPaymentCodeException('Failed to extract payment code'));
+            ->andThrow(new ExtractPaymentCodeException);
     });
 
     Livewire::actingAs($user)
@@ -105,9 +108,12 @@ test('generic exception displays fallback error message', function () {
 test('file input is reset after submission', function () {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
+    $codeValue = '12345678901234567890123456789012345678901234567';
 
-    $this->mock(ExtractPaymentCodeService::class, function ($mock) {
-        $mock->shouldReceive('execute')->once()->andReturn('12345678901234567890123456789012345678901234');
+    $this->mock(ExtractPaymentCodeService::class, function ($mock) use ($codeValue) {
+        $paymentCode = new PaymentCode($codeValue);
+
+        $mock->shouldReceive('execute')->once()->andReturn($paymentCode);
     });
 
     Livewire::actingAs($user)

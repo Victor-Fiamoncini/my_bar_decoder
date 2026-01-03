@@ -1,22 +1,41 @@
 <?php
 
-namespace App\Core\Domain\Parsers;
+namespace App\Core\Domain\Entities;
 
-final class PaymentCodeParser
+use App\Core\Domain\Entities\Exceptions\ExtractPaymentCodeException;
+
+class PaymentCode
 {
-    public function parseFromText(string $text): ?string
+    public readonly string $code;
+
+    /**
+     * @throws ExtractPaymentCodeException
+     */
+    public function __construct(string $text)
+    {
+        $this->tryToExtractCodeFromText($text);
+    }
+
+    /**
+     * @throws ExtractPaymentCodeException
+     */
+    private function tryToExtractCodeFromText(string $text): void
     {
         // Brazilian DAS Barcode (48 digits)
-        if ($code = $this->extractDasCode($text)) {
-            return $code;
+        if ($dasCode = $this->extractDasCode($text)) {
+            $this->code = $dasCode;
+
+            return;
         }
 
         // Brazilian standard Bill Document (47 digits)
-        if ($code = $this->extractBillCode($text)) {
-            return $code;
+        if ($brazilianBillCode = $this->extractBillCode($text)) {
+            $this->code = $brazilianBillCode;
+
+            return;
         }
 
-        return null;
+        throw new ExtractPaymentCodeException;
     }
 
     private function extractDasCode(string $text): ?string
