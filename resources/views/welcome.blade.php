@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
-        @include('partials.head', ['title' => 'My Bar Decoder'])
+        @include('partials.head')
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
