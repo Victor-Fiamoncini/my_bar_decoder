@@ -5,7 +5,28 @@
 <meta name="msapplication-navbutton-color" content="#5e72e4" />
 <meta name="apple-mobile-web-app-status-bar-style" content="#5e72e4" />
 
-<title>{{ $title ?? config('app.name') }}</title>
+<!-- SEO Meta Tags -->
+<meta name="description" content="Extract payment codes from DAS and Brazilian bill documents automatically. Fast, secure, and reliable payment code extraction service.">
+<meta name="keywords" content="payment code, barcode decoder, DAS, Brazilian bills, payment extraction">
+<meta name="author" content="Victor B. Fiamoncini">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ url('/') }}">
+<meta property="og:title" content="My Bar Decoder">
+<meta property="og:description" content="Extract payment codes from DAS and Brazilian bill documents automatically.">
+<meta property="og:image" content="{{ asset('logo.png') }}">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="{{ url('/') }}">
+<meta property="twitter:title" content="My Bar Decoder">
+<meta property="twitter:description" content="Extract payment codes from DAS and Brazilian bill documents automatically.">
+<meta property="twitter:image" content="{{ asset('logo.png') }}">
+
+<link rel="canonical" href="{{ url('/') }}">
+
+<title>My Bar Decoder</title>
 
 <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
 <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon-96x96.png') }}">
