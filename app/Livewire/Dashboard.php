@@ -7,23 +7,40 @@ use App\Core\Application\Services\ExtractPaymentCode\ExtractPaymentCodeService;
 use App\Core\Domain\Entities\Exceptions\ExtractPaymentCodeException;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
-use Throwable;
 
 class Dashboard extends Component
 {
     use WithFileUploads, WithPagination;
 
-    #[Validate('required', message: 'An attached file is required')]
-    #[Validate('file', message: 'The attached file must be a valid file')]
-    #[Validate('mimes:pdf', message: 'The attached file must be a PDF')]
-    #[Validate('max:5120', message: 'The maximum attached file size is 5MB')]
-    public $file;
+    public $files = [];
 
-    public string $paymentCode = '';
+    public array $paymentCodes = [];
+
+    public array $errors = [];
+
+    protected function rules(): array
+    {
+        return [
+            'files' => 'present|array|min:1|max:10',
+            'files.*' => 'file|mimes:pdf|max:5120',
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'files.present' => 'At least one file is required',
+            'files.array' => 'Files must be provided as an array',
+            'files.min' => 'At least one file is required',
+            'files.max' => 'Maximum 10 files allowed',
+            'files.*.file' => 'Each upload must be a valid file',
+            'files.*.mimes' => 'Each file must be a PDF',
+            'files.*.max' => 'Each file must not exceed 5MB',
+        ];
+    }
 
     public function getDocumentsProperty(): LengthAwarePaginator
     {
@@ -39,33 +56,37 @@ class Dashboard extends Component
     {
         $validated = $this->validate();
 
-        try {
-            $extractedPaymentCode = $extractBarcodeService->execute(
-                auth()->id(),
-                new FileDTO(
-                    name: $validated['file']->getClientOriginalName(),
-                    path: $validated['file']->getRealPath()
-                )
-            );
+        $this->paymentCodes = [];
+        $this->errors = [];
 
-            $this->paymentCode = $extractedPaymentCode->code;
-            $this->resetPage();
+        foreach ($validated['files'] as $file) {
+            try {
+                $extractedPaymentCode = $extractBarcodeService->execute(
+                    auth()->id(),
+                    new FileDTO(
+                        name: $file->getClientOriginalName(),
+                        path: $file->getRealPath()
+                    )
+                );
 
-            session()->flash('success', __('Payment code extracted successfully!'));
-        } catch (ExtractPaymentCodeException $e) {
-            $message = 'Failed to extract payment code from the attached file.';
-
-            $this->addError('file', $message);
-
-            session()->flash('error', __($message));
-        } catch (Throwable $t) {
-            $message = 'Failed to process the attached file. Please try again later.';
-
-            $this->addError('file', $message);
-
-            session()->flash('error', __($message));
-        } finally {
-            $this->reset('file');
+                $this->paymentCodes[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'code' => $extractedPaymentCode->code,
+                ];
+            } catch (ExtractPaymentCodeException $e) {
+                $this->errors[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'message' => __('Failed to extract payment code from :file', ['file' => $file->getClientOriginalName()]),
+                ];
+            } catch (\Throwable $t) {
+                $this->errors[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'message' => __('Failed to process :file', ['file' => $file->getClientOriginalName()]),
+                ];
+            }
         }
+
+        $this->reset('files');
+        $this->resetPage();
     }
 }
