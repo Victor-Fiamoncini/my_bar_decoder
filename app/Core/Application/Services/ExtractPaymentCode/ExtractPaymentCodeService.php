@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Core\Data\Services\ExtractPaymentCode;
+namespace App\Core\Application\Services\ExtractPaymentCode;
 
-use App\Core\Data\Adapter\DocumentDAO;
-use App\Core\Data\Adapter\FileTextExtractor;
-use App\Core\Data\Services\ExtractPaymentCode\DTOs\FileDTO;
-use App\Core\Data\Services\ExtractPaymentCode\Exceptions\ExtractFileTextException;
+use App\Core\Application\Adapter\DocumentDAO;
+use App\Core\Application\Adapter\FileTextExtractor;
+use App\Core\Application\Services\ExtractPaymentCode\DTOs\FileDTO;
+use App\Core\Application\Services\ExtractPaymentCode\Exceptions\ExtractFileTextException;
 use App\Core\Domain\Entities\Exceptions\ExtractPaymentCodeException;
 use App\Core\Domain\Entities\PaymentCode;
 

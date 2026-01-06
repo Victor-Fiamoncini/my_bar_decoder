@@ -1,6 +1,6 @@
 <?php
 
-use App\Core\Data\Services\ExtractPaymentCode\ExtractPaymentCodeService;
+use App\Core\Application\Services\ExtractPaymentCode\ExtractPaymentCodeService;
 use App\Core\Domain\Entities\Exceptions\ExtractPaymentCodeException;
 use App\Core\Domain\Entities\PaymentCode;
 use App\Livewire\Dashboard;

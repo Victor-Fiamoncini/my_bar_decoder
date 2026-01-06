@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Data\Services\ExtractPaymentCode\DTOs;
+namespace App\Core\Application\Services\ExtractPaymentCode\DTOs;
 
 readonly class FileDTO
 {

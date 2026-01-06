@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Data\Adapter;
+namespace App\Core\Application\Adapter;
 
 interface DocumentDAO
 {

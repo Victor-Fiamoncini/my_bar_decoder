@@ -52,6 +52,44 @@ sail artisan migrate
 sail npm run dev
 ```
 
+## Architecture
+
+The project follows a Clean Architecture approach with Domain-Driven Design (DDD) principles, separating business logic from framework dependencies and infrastructure concerns.
+
+### Core Namespace Structure
+
+The `\Core` namespace is organized into distinct layers:
+
+```
+App\Core\
+├── 📦 Domain\          # Business logic and entities
+├── ⚙️ Application\     # Use cases and services
+└── 🔌 Infrastructure\  # External dependencies and implementations
+```
+
+### Domain Layer
+
+Domain entities represent core business concepts with encapsulated business rules:
+- Immutability: Entities use readonly properties to ensure state consistency
+- Value Objects: Properties like `PaymentCode::$code` are protected to maintain invariants
+- Business Rules: Validation and behavior are encapsulated within entities
+
+Example: `PaymentCode` entity enforces payment code format rules and provides typed access to its properties.
+
+### Application Layer
+
+Application services/use-cases orchestrate domain entities and coordinate business workflows:
+- Single Responsibility: Each service handles one specific use case
+- Dependency Injection: Services depend on interfaces, not concrete implementations
+- Framework Agnostic: No direct Laravel dependencies in service logic
+
+### Infrastructure Layer
+
+Concrete implementations of domain interfaces:
+- Database interactions (Eloquent models/repositories)
+- External API clients
+- OCR services (Google Vision API)
+
 ----------
 Released in 2025
 

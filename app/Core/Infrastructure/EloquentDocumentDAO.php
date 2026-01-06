@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core\Infra;
+namespace App\Core\Infrastructure;
 
-use App\Core\Data\Adapter\DocumentDAO;
+use App\Core\Application\Adapter\DocumentDAO;
 use App\Models\Document;
 
 class EloquentDocumentDAO implements DocumentDAO

@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Core\Data\Services\ExtractPaymentCode\ExtractPaymentCodeService;
-use App\Core\Infra\EloquentDocumentDAO;
-use App\Core\Infra\GoogleVisionFileTextExtractor;
+use App\Core\Application\Services\ExtractPaymentCode\ExtractPaymentCodeService;
+use App\Core\Infrastructure\EloquentDocumentDAO;
+use App\Core\Infrastructure\GoogleVisionFileTextExtractor;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 

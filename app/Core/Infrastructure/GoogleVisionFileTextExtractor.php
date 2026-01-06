@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core\Infra;
+namespace App\Core\Infrastructure;
 
-use App\Core\Data\Adapter\FileTextExtractor;
+use App\Core\Application\Adapter\FileTextExtractor;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;

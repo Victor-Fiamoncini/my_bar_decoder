@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Core\Data\Services\ExtractPaymentCode\DTOs\FileDTO;
-use App\Core\Data\Services\ExtractPaymentCode\ExtractPaymentCodeService;
+use App\Core\Application\Services\ExtractPaymentCode\DTOs\FileDTO;
+use App\Core\Application\Services\ExtractPaymentCode\ExtractPaymentCodeService;
 use App\Core\Domain\Entities\Exceptions\ExtractPaymentCodeException;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
