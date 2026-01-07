@@ -33,7 +33,7 @@ test('user can submit a single valid PDF file', function () {
         ->test(Dashboard::class)
         ->set('files', [$file])
         ->call('submit')
-        ->assertSet('paymentCodes', [['name' => 'document.pdf', 'code' => $codeValue]])
+        ->assertSet('extractedPaymentCodes', [['name' => 'document.pdf', 'code' => $codeValue]])
         ->assertHasNoErrors();
 });
 
@@ -54,7 +54,7 @@ test('user can submit multiple valid PDF files', function () {
         ->test(Dashboard::class)
         ->set('files', $files)
         ->call('submit')
-        ->assertCount('paymentCodes', 2)
+        ->assertCount('extractedPaymentCodes', 2)
         ->assertHasNoErrors();
 });
 
@@ -134,7 +134,7 @@ test('extraction exception adds error to errors array', function () {
         ->set('files', [$file])
         ->call('submit')
         ->assertCount('errors', 1)
-        ->assertCount('paymentCodes', 0);
+        ->assertCount('extractedPaymentCodes', 0);
 });
 
 test('generic exception adds error to errors array', function () {
@@ -150,7 +150,7 @@ test('generic exception adds error to errors array', function () {
         ->set('files', [$file])
         ->call('submit')
         ->assertCount('errors', 1)
-        ->assertCount('paymentCodes', 0);
+        ->assertCount('extractedPaymentCodes', 0);
 });
 
 test('partial success shows both results and errors', function () {
@@ -175,7 +175,7 @@ test('partial success shows both results and errors', function () {
         ->test(Dashboard::class)
         ->set('files', $files)
         ->call('submit')
-        ->assertCount('paymentCodes', 1)
+        ->assertCount('extractedPaymentCodes', 1)
         ->assertCount('errors', 1);
 });
 
@@ -201,7 +201,7 @@ test('user can see their previous documents', function () {
 
     Document::factory()->count(3)->create(['name' => 'file.pdf', 'code' => '111', 'user_id' => $user->id]);
 
-    Livewire::actingAs($user)
-        ->test(Dashboard::class)
-        ->assertCount('documents', 3);
+    $component = Livewire::actingAs($user)->test(Dashboard::class);
+
+    expect($component->recentlyDocuments)->toHaveCount(3);
 });

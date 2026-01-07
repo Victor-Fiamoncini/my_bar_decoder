@@ -40,27 +40,27 @@
             <flux:error name="files" />
         </form>
 
-        @if (count($paymentCodes) > 0)
+        @if (count($extractedPaymentCodes) > 0)
             <div class="space-y-4">
                 <flux:heading>{{ __('Extracted Payment Codes') }}</flux:heading>
 
-                @foreach ($paymentCodes as $result)
+                @foreach ($extractedPaymentCodes as $extractedPaymentCode)
                     <div class="p-6 border border-primary rounded-lg space-y-2" data-test="payment-code-card">
-                        <flux:heading size="sm">{{ $result['name'] }}</flux:heading>
+                        <flux:heading size="sm">{{ $extractedPaymentCode['name'] }}</flux:heading>
 
                         <div class="flex items-center justify-start gap-2 flex-wrap">
                             <flux:button
                                 size="sm"
                                 variant="filled"
                                 icon="clipboard"
-                                onclick="navigator.clipboard.writeText('{{ $result['code'] }}');"
+                                onclick="navigator.clipboard.writeText('{{ $extractedPaymentCode['code'] }}');"
                                 title="{{ __('Copy to clipboard') }}"
                                 data-test="copy-button"
                             >
                                 {{ __('Copy') }}
                             </flux:button>
 
-                            <flux:subheading class="break-all">{{ $result['code'] }}</flux:subheading>
+                            <flux:subheading class="break-all">{{ $extractedPaymentCode['code'] }}</flux:subheading>
                         </div>
                     </div>
                 @endforeach
@@ -82,30 +82,30 @@
         @endif
     </div>
 
-    @if ($this->documents->isNotEmpty())
+    @if ($this->recentlyDocuments->isNotEmpty())
         <div class="space-y-6 w-full">
             <flux:heading size="lg">{{ __('Your Previous Documents') }}</flux:heading>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach ($this->documents as $document)
+                @foreach ($this->recentlyDocuments as $recentlyDocument)
                     <div class="p-6 border rounded-lg w-full">
                         <div class="space-y-2" data-test="document-card">
-                            <flux:heading class="wrap-break-word">{{ $document->name }}</flux:heading>
+                            <flux:heading class="wrap-break-word">{{ $recentlyDocument->name }}</flux:heading>
 
-                            <flux:subheading class="break-all">{{ $document->code }}</flux:subheading>
+                            <flux:subheading class="break-all">{{ $recentlyDocument->code }}</flux:subheading>
 
                             <flux:badge size="sm" variant="subtle">
-                                {{ $document->created_at->format('M d, Y H:i') }}
+                                {{ $recentlyDocument->created_at->format('M d, Y H:i') }}
                             </flux:badge>
                         </div>
                     </div>
                 @endforeach
             </div>
 
-            @if ($this->documents->hasPages())
+            @if ($this->recentlyDocuments->hasPages())
                 <div class="flex items-center justify-between">
                     <div class="flex gap-2">
-                        @if ($this->documents->onFirstPage())
+                        @if ($this->recentlyDocuments->onFirstPage())
                             <flux:button disabled>
                                 {{ __('Previous') }}
                             </flux:button>
@@ -115,7 +115,7 @@
                             </flux:button>
                         @endif
 
-                        @if ($this->documents->hasMorePages())
+                        @if ($this->recentlyDocuments->hasMorePages())
                             <flux:button wire:click="nextPage">
                                 {{ __('Next') }}
                             </flux:button>
@@ -128,8 +128,8 @@
 
                     <flux:subheading>
                         {{ __('Page :current of :last', [
-                            'current' => $this->documents->currentPage(),
-                            'last' => $this->documents->lastPage()
+                            'current' => $this->recentlyDocuments->currentPage(),
+                            'last' => $this->recentlyDocuments->lastPage()
                         ]) }}
                     </flux:subheading>
                 </div>

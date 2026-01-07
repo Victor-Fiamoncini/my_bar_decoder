@@ -17,9 +17,9 @@ class Dashboard extends Component
 
     public $files = [];
 
-    public array $paymentCodes = [];
-
     public array $errors = [];
+
+    public array $extractedPaymentCodes = [];
 
     protected function rules(): array
     {
@@ -42,7 +42,7 @@ class Dashboard extends Component
         ];
     }
 
-    public function getDocumentsProperty(): LengthAwarePaginator
+    public function getRecentlyDocumentsProperty(): LengthAwarePaginator
     {
         /** @var User $user */
         $user = auth()->user();
@@ -54,12 +54,12 @@ class Dashboard extends Component
 
     public function submit(ExtractPaymentCodeService $extractBarcodeService): void
     {
-        $validated = $this->validate();
+        $this->validate();
 
-        $this->paymentCodes = [];
         $this->errors = [];
+        $this->extractedPaymentCodes = [];
 
-        foreach ($validated['files'] as $file) {
+        foreach ($this->files as $file) {
             try {
                 $extractedPaymentCode = $extractBarcodeService->execute(
                     auth()->id(),
@@ -69,7 +69,7 @@ class Dashboard extends Component
                     )
                 );
 
-                $this->paymentCodes[] = [
+                $this->extractedPaymentCodes[] = [
                     'name' => $file->getClientOriginalName(),
                     'code' => $extractedPaymentCode->code,
                 ];
