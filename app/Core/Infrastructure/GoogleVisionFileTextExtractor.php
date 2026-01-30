@@ -4,13 +4,14 @@ namespace App\Core\Infrastructure;
 
 use App\Core\Application\Adapter\FileTextExtractor;
 use Exception;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class GoogleVisionFileTextExtractor implements FileTextExtractor
 {
-    private readonly string $googleVisionApiUrl;
+    private string $googleVisionApiUrl;
 
     public function __construct()
     {
@@ -24,40 +25,26 @@ class GoogleVisionFileTextExtractor implements FileTextExtractor
      */
     public function extractFromFilePath(string $filePath): string
     {
-        $tempImagePath = storage_path('app/temp_'.uniqid().'.png');
+        $tempImagePath = $this->generateTempFilePath();
 
         try {
             $this->tryConvertPdfToImage($filePath, $tempImagePath);
 
-            $imageBase64Content = base64_encode(file_get_contents($tempImagePath));
-
-            $response = Http::timeout(60)->post($this->googleVisionApiUrl, [
-                'requests' => [
-                    [
-                        'image' => ['content' => $imageBase64Content],
-                        'features' => [['type' => 'TEXT_DETECTION', 'maxResults' => 1]],
-                    ],
-                ],
-            ]);
-
-            if ($response->failed()) {
-                throw new Exception('Failed to extract text content from PNG');
-            }
-
-            $fileText = $response->json('responses.0.textAnnotations.0.description', '');
-
-            if ($fileText) {
-                return $fileText;
-            }
-
-            throw new Exception('Extracted file text not found');
+            return $this->extractContentFromBase64File($this->encodeFileToBase64($tempImagePath));
         } catch (Throwable $t) {
             Log::error($t->getMessage());
 
             throw new Exception('Failed to extract text content from file');
         } finally {
-            unlink($tempImagePath);
+            if (file_exists($tempImagePath)) {
+                unlink($tempImagePath);
+            }
         }
+    }
+
+    private function generateTempFilePath(): string
+    {
+        return storage_path('app/temp_'.uniqid().'.png');
     }
 
     /**
@@ -71,10 +58,43 @@ class GoogleVisionFileTextExtractor implements FileTextExtractor
             escapeshellarg($pdfPath)
         );
 
-        exec($command, $output, $returnVar);
+        exec($command, $output, $resultCode);
 
-        if ($returnVar !== 0 || ! file_exists($imagePath)) {
+        if ($resultCode !== 0) {
             throw new Exception('Failed to convert PDF to PNG');
         }
+    }
+
+    private function encodeFileToBase64(string $filePath): string
+    {
+        return base64_encode(file_get_contents($filePath));
+    }
+
+    /**
+     * @throws ConnectionException
+     * @throws Exception
+     */
+    private function extractContentFromBase64File(string $base64Content): string
+    {
+        $response = Http::timeout(60)->post($this->googleVisionApiUrl, [
+            'requests' => [
+                [
+                    'image' => ['content' => $base64Content],
+                    'features' => [['type' => 'TEXT_DETECTION', 'maxResults' => 1]],
+                ],
+            ],
+        ]);
+
+        if ($response->failed()) {
+            throw new Exception('Failed to extract text content from base64 PNG');
+        }
+
+        $fileText = $response->json('responses.0.textAnnotations.0.description', '');
+
+        if ($fileText) {
+            return $fileText;
+        }
+
+        throw new Exception('Extracted file text not found');
     }
 }
