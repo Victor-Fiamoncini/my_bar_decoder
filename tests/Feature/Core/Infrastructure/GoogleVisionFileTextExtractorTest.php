@@ -47,6 +47,28 @@ it('extracts payment code from the document-03.pdf file successfully', function 
         ->toBe('08591150084004849460900012030011513550000040900');
 });
 
+it('extracts payment code from the document-04.pdf file successfully', function () {
+    $pdfPath = base_path('tests/Fixtures/document-04.pdf');
+    $extractorResult = $this->extractor->extractFromFilePath($pdfPath);
+    $paymentCode = new PaymentCode($extractorResult);
+
+    expect($extractorResult)
+        ->toBeString()
+        ->and($paymentCode->code)
+        ->toBe('00190000090334505900445377277178212400000014255');
+});
+
+it('extracts payment code from the document-05.pdf file successfully', function () {
+    $pdfPath = base_path('tests/Fixtures/document-05.pdf');
+    $extractorResult = $this->extractor->extractFromFilePath($pdfPath);
+    $paymentCode = new PaymentCode($extractorResult);
+
+    expect($extractorResult)
+        ->toBeString()
+        ->and($paymentCode->code)
+        ->toBe('858700000111220003282608200720260097129605459740');
+});
+
 it('throws exception when PDF file does not exist', function () {
     $extractor = new GoogleVisionFileTextExtractor;
     $nonExistentPath = base_path('completely_non_existent_file.pdf');
