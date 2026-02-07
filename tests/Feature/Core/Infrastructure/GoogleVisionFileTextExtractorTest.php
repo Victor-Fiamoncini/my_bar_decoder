@@ -70,8 +70,7 @@ it('extracts payment code from the document-05.pdf file successfully', function 
 });
 
 it('throws exception when PDF file does not exist', function () {
-    $extractor = new GoogleVisionFileTextExtractor;
     $nonExistentPath = base_path('completely_non_existent_file.pdf');
 
-    expect(fn () => $extractor->extractFromFilePath($nonExistentPath))->toThrow(Exception::class);
+    expect(fn () => $this->extractor->extractFromFilePath($nonExistentPath))->toThrow(Exception::class);
 });
