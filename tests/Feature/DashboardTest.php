@@ -87,9 +87,9 @@ test('at least one file is required', function () {
         ->assertHasErrors(['files' => 'min']);
 });
 
-test('maximum 10 files allowed', function () {
+test('maximum 5 files allowed', function () {
     $user = User::factory()->create();
-    $files = collect(range(1, 11))->map(fn ($i) => UploadedFile::fake()->create("document{$i}.pdf", 100, 'application/pdf')
+    $files = collect(range(1, 6))->map(fn ($i) => UploadedFile::fake()->create("document{$i}.pdf", 100, 'application/pdf')
     )->toArray();
 
     Livewire::actingAs($user)

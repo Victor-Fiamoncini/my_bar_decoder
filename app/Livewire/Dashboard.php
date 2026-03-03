@@ -24,7 +24,7 @@ class Dashboard extends Component
     protected function rules(): array
     {
         return [
-            'files' => 'present|array|min:1|max:10',
+            'files' => 'present|array|min:1|max:5',
             'files.*' => 'file|mimes:pdf|max:5120',
         ];
     }
@@ -35,7 +35,7 @@ class Dashboard extends Component
             'files.present' => 'At least one file is required',
             'files.array' => 'Files must be provided as an array',
             'files.min' => 'At least one file is required',
-            'files.max' => 'Maximum 10 files allowed',
+            'files.max' => 'Maximum 5 files allowed',
             'files.*.file' => 'Each upload must be a valid file',
             'files.*.mimes' => 'Each file must be a PDF',
             'files.*.max' => 'Each file must not exceed 5MB',
