@@ -25,11 +25,9 @@ readonly class ExtractPaymentCodeService implements ExtractPaymentCodeUseCase
         $fileText = $this->fileTextExtractor->extractFromFilePath($input->file->path);
 
         if ($fileText) {
-            $paymentCode = PaymentCode::tryCreateFromText($fileText);
-
             $document = new Document(
                 name: $input->file->name,
-                paymentCode: $paymentCode,
+                paymentCode: PaymentCode::tryCreateFromText($fileText),
                 createdAt: new \DateTimeImmutable,
                 ownerId: $input->paymentCodeOwner->id,
             );

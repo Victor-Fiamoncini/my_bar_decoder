@@ -26,7 +26,7 @@ readonly class PaymentCode
 
     private static function extractDasCode(string $text): ?string
     {
-        $dasPattern = '/(\d{11}\s*\d{1}\s*\d{11}\s*\d{1}\s*\d{11}\s*\d{1}\s*\d{11}\s*\d{1})/';
+        $dasPattern = '/(\d{11}\s*\d\s*\d{11}\s*\d\s*\d{11}\s*\d\s*\d{11}\s*\d)/';
 
         preg_match($dasPattern, $text, $matches);
 
@@ -34,7 +34,7 @@ readonly class PaymentCode
             return null;
         }
 
-        return preg_replace('/[^\d]/', '', $matches[0]);
+        return preg_replace('/\D/', '', $matches[0]);
     }
 
     private static function extractBillCode(string $text): ?string
@@ -47,6 +47,6 @@ readonly class PaymentCode
             return null;
         }
 
-        return preg_replace('/[^\d]/', '', $matches[0]);
+        return preg_replace('/\D/', '', $matches[0]);
     }
 }
