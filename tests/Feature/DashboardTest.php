@@ -1,12 +1,13 @@
 <?php
 
 use App\Core\Modules\Documents\Application\Services\ExtractPaymentCodeService\Exceptions\FailedToExtractPaymentCodeException;
+use App\Core\Modules\Documents\Domain\Entities\Document\Document;
 use App\Core\Modules\Documents\Domain\Entities\PaymentCode\Exceptions\ExtractCodeException;
 use App\Core\Modules\Documents\Domain\Entities\PaymentCode\PaymentCode;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\ExtractPaymentCodeUseCase;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Output\Output;
 use App\Livewire\Dashboard;
-use App\Models\Document;
+use App\Models\Document as EloquentDocument;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Livewire\Livewire;
@@ -28,7 +29,7 @@ test('user can submit a single valid PDF file', function () {
 
     $this->mock(ExtractPaymentCodeUseCase::class, function ($mock) use ($codeValue) {
         $paymentCode = PaymentCode::tryCreateFromText($codeValue);
-        $output = new Output($paymentCode);
+        $output = new Output(new Document('document.pdf', $paymentCode, new \DateTimeImmutable, 1));
 
         $mock->shouldReceive('execute')->once()->andReturn($output);
     });
@@ -51,7 +52,7 @@ test('user can submit multiple valid PDF files', function () {
     $this->mock(ExtractPaymentCodeUseCase::class, function ($mock) {
         $codeValue = '12345678901234567890123456789012345678901234567';
         $paymentCode = PaymentCode::tryCreateFromText($codeValue);
-        $output = new Output($paymentCode);
+        $output = new Output(new Document('document.pdf', $paymentCode, new \DateTimeImmutable, 1));
 
         $mock->shouldReceive('execute')->twice()->andReturn($output);
     });
@@ -186,7 +187,7 @@ test('partial success shows both results and errors', function () {
     $this->mock(ExtractPaymentCodeUseCase::class, function ($mock) {
         $codeValue = '12345678901234567890123456789012345678901234567';
         $paymentCode = PaymentCode::tryCreateFromText($codeValue);
-        $output = new Output($paymentCode);
+        $output = new Output(new Document('success.pdf', $paymentCode, new \DateTimeImmutable, 1));
 
         $mock->shouldReceive('execute')
             ->once()
@@ -212,7 +213,7 @@ test('file input is reset after submission', function () {
     $this->mock(ExtractPaymentCodeUseCase::class, function ($mock) {
         $codeValue = '12345678901234567890123456789012345678901234567';
         $paymentCode = PaymentCode::tryCreateFromText($codeValue);
-        $output = new Output($paymentCode);
+        $output = new Output(new Document('document.pdf', $paymentCode, new \DateTimeImmutable, 1));
 
         $mock->shouldReceive('execute')->once()->andReturn($output);
     });
@@ -227,7 +228,7 @@ test('file input is reset after submission', function () {
 test('user can see their previous documents', function () {
     $user = User::factory()->create();
 
-    Document::factory()->count(3)->create(['name' => 'file.pdf', 'code' => '111', 'user_id' => $user->id]);
+    EloquentDocument::factory()->count(3)->create(['name' => 'file.pdf', 'code' => '111', 'user_id' => $user->id]);
 
     $component = Livewire::actingAs($user)->test(Dashboard::class);
 

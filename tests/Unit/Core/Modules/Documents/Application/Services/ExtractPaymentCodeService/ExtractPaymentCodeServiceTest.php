@@ -1,11 +1,11 @@
 <?php
 
-use App\Core\Modules\Documents\Application\Adapter\DocumentDAO\DocumentDAO;
-use App\Core\Modules\Documents\Application\Adapter\DocumentDAO\DTOs\CreateDocumentDTO;
 use App\Core\Modules\Documents\Application\Adapter\FileTextExtractor;
 use App\Core\Modules\Documents\Application\Services\ExtractPaymentCodeService\Exceptions\FailedToExtractPaymentCodeException;
 use App\Core\Modules\Documents\Application\Services\ExtractPaymentCodeService\ExtractPaymentCodeService;
+use App\Core\Modules\Documents\Domain\Entities\Document\Document;
 use App\Core\Modules\Documents\Domain\Entities\PaymentCode\Exceptions\ExtractCodeException;
+use App\Core\Modules\Documents\Domain\Repositories\DocumentRepository;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Input\File;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Input\Input;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Input\PaymentCodeOwner;
@@ -13,8 +13,8 @@ use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Output\
 
 beforeEach(function () {
     $this->fileTextExtractor = Mockery::mock(FileTextExtractor::class);
-    $this->documentDAO = Mockery::mock(DocumentDAO::class);
-    $this->service = new ExtractPaymentCodeService($this->fileTextExtractor, $this->documentDAO);
+    $this->documentRepository = Mockery::mock(DocumentRepository::class);
+    $this->service = new ExtractPaymentCodeService($this->fileTextExtractor, $this->documentRepository);
 });
 
 afterEach(function () {
@@ -32,24 +32,20 @@ test('successfully extracts payment code and creates document', function () {
         ->shouldReceive('extractFromFilePath')
         ->once()
         ->with($input->file->path)
-
         ->andReturn($expectedPaymentCode);
 
-    $this->documentDAO
-        ->shouldReceive('create')
+    $this->documentRepository
+        ->shouldReceive('save')
         ->once()
-        ->with(Mockery::on(function (CreateDocumentDTO $dto) use ($input, $expectedPaymentCode) {
-            return $dto->name === $input->file->name
-                && $dto->code === $expectedPaymentCode
-                && $dto->userId === $input->paymentCodeOwner->id;
-        }))
-        ->andReturn(true);
+        ->with(Mockery::on(fn (Document $doc) => $doc->name === $input->file->name
+            && $doc->paymentCode->code === $expectedPaymentCode
+            && $doc->ownerId === $input->paymentCodeOwner->id));
 
     $output = $this->service->execute($input);
 
     expect($output)
         ->toBeInstanceOf(Output::class)
-        ->and($output->paymentCode->code)
+        ->and($output->document->paymentCode->code)
         ->toBe($expectedPaymentCode);
 });
 
@@ -65,12 +61,12 @@ test('throws exception when payment code extraction fails', function () {
         ->with($input->file->path)
         ->andThrow(new \Exception);
 
-    $this->documentDAO->shouldNotReceive('create');
+    $this->documentRepository->shouldNotReceive('save');
 
     $this->service->execute($input);
 })->throws(\Exception::class);
 
-test('does not create document when extraction returns empty string', function () {
+test('does not persist document when extraction returns empty string', function () {
     $input = new Input(
         file: new File(name: 'test.pdf', path: '/path/to/test.pdf'),
         paymentCodeOwner: new PaymentCodeOwner(id: 1)
@@ -82,7 +78,7 @@ test('does not create document when extraction returns empty string', function (
         ->with($input->file->path)
         ->andReturn('');
 
-    $this->documentDAO->shouldNotReceive('create');
+    $this->documentRepository->shouldNotReceive('save');
 
     $this->service->execute($input);
 })->throws(FailedToExtractPaymentCodeException::class);
@@ -99,7 +95,7 @@ test('throws exception when text does not contain valid payment code', function 
         ->with($input->file->path)
         ->andReturn('Invalid text without payment code');
 
-    $this->documentDAO->shouldNotReceive('create');
+    $this->documentRepository->shouldNotReceive('save');
 
     $this->service->execute($input);
 })->throws(ExtractCodeException::class);

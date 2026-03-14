@@ -2,19 +2,19 @@
 
 namespace App\Core\Modules\Documents\Application\Services\ExtractPaymentCodeService;
 
-use App\Core\Modules\Documents\Application\Adapter\DocumentDAO\DocumentDAO;
-use App\Core\Modules\Documents\Application\Adapter\DocumentDAO\DTOs\CreateDocumentDTO;
 use App\Core\Modules\Documents\Application\Adapter\FileTextExtractor;
 use App\Core\Modules\Documents\Application\Services\ExtractPaymentCodeService\Exceptions\FailedToExtractPaymentCodeException;
+use App\Core\Modules\Documents\Domain\Entities\Document\Document;
 use App\Core\Modules\Documents\Domain\Entities\PaymentCode\Exceptions\ExtractCodeException;
 use App\Core\Modules\Documents\Domain\Entities\PaymentCode\PaymentCode;
+use App\Core\Modules\Documents\Domain\Repositories\DocumentRepository;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\ExtractPaymentCodeUseCase;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Input\Input;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Output\Output;
 
 readonly class ExtractPaymentCodeService implements ExtractPaymentCodeUseCase
 {
-    public function __construct(private FileTextExtractor $fileTextExtractor, private DocumentDAO $documentDAO) {}
+    public function __construct(private FileTextExtractor $fileTextExtractor, private DocumentRepository $documentRepository) {}
 
     /**
      * @throws ExtractCodeException
@@ -27,15 +27,16 @@ readonly class ExtractPaymentCodeService implements ExtractPaymentCodeUseCase
         if ($fileText) {
             $paymentCode = PaymentCode::tryCreateFromText($fileText);
 
-            $createDocumentDTO = new CreateDocumentDTO(
+            $document = new Document(
                 name: $input->file->name,
-                code: $paymentCode->code,
-                userId: $input->paymentCodeOwner->id
+                paymentCode: $paymentCode,
+                createdAt: new \DateTimeImmutable,
+                ownerId: $input->paymentCodeOwner->id,
             );
 
-            $this->documentDAO->create($createDocumentDTO);
+            $this->documentRepository->save($document);
 
-            return new Output($paymentCode);
+            return new Output($document);
         }
 
         throw new FailedToExtractPaymentCodeException;

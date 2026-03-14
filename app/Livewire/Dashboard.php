@@ -2,12 +2,12 @@
 
 namespace App\Livewire;
 
+use App\Core\Modules\Documents\Application\Adapter\DocumentDAO\DocumentDAO;
 use App\Core\Modules\Documents\Application\Services\ExtractPaymentCodeService\Exceptions\FailedToExtractPaymentCodeException;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\ExtractPaymentCodeUseCase;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Input\File;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Input\Input;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Input\PaymentCodeOwner;
-use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -22,6 +22,13 @@ class Dashboard extends Component
     public array $errors = [];
 
     public array $extractedPaymentCodes = [];
+
+    private DocumentDAO $documentDAO;
+
+    public function boot(DocumentDAO $documentDAO): void
+    {
+        $this->documentDAO = $documentDAO;
+    }
 
     protected function rules(): array
     {
@@ -46,13 +53,7 @@ class Dashboard extends Component
 
     public function getRecentlyDocumentsProperty(): LengthAwarePaginator
     {
-        $user = auth()->user();
-
-        assert($user instanceof User);
-
-        return $user->documents()
-            ->latest()
-            ->paginate(6, ['id', 'name', 'code', 'created_at']);
+        return $this->documentDAO->listByOwnerId(auth()->id(), 6);
     }
 
     public function submit(ExtractPaymentCodeUseCase $extractPaymentCodeUseCase): void
@@ -73,7 +74,7 @@ class Dashboard extends Component
 
                 $this->extractedPaymentCodes[] = [
                     'name' => $file->getClientOriginalName(),
-                    'code' => $output->paymentCode->code,
+                    'code' => $output->document->paymentCode->code,
                 ];
             } catch (FailedToExtractPaymentCodeException $e) {
                 $this->errors[] = [
