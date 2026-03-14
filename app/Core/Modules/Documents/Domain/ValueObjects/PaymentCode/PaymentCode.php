@@ -39,7 +39,7 @@ readonly class PaymentCode
 
     private static function extractBillCode(string $text): ?string
     {
-        $standardBillPattern = '/(\d{5}[\.\s]?\d{5}[\.\s]?\d{5}[\.\s]?\d{6}[\.\s]?\d{5}[\.\s]?\d{6}[\.\s]?\d[\.\s]?\d{14})/';
+        $standardBillPattern = '/(\d{5}[.\s]?\d{5}[.\s]?\d{5}[.\s]?\d{6}[.\s]?\d{5}[.\s]?\d{6}[.\s]?\d[.\s]?\d{14})/';
 
         preg_match($standardBillPattern, $text, $matches);
 
