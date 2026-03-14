@@ -2,10 +2,10 @@
 
 use App\Core\Modules\Documents\Application\Services\ExtractPaymentCodeService\Exceptions\FailedToExtractPaymentCodeException;
 use App\Core\Modules\Documents\Domain\Entities\Document\Document;
-use App\Core\Modules\Documents\Domain\Entities\PaymentCode\Exceptions\ExtractCodeException;
-use App\Core\Modules\Documents\Domain\Entities\PaymentCode\PaymentCode;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\ExtractPaymentCodeUseCase;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Output\Output;
+use App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode\Exceptions\ExtractCodeException;
+use App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode\PaymentCode;
 use App\Livewire\Dashboard;
 use App\Models\Document as EloquentDocument;
 use App\Models\User;

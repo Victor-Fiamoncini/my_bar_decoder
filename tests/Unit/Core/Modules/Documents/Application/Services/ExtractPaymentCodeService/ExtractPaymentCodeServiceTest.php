@@ -4,12 +4,12 @@ use App\Core\Modules\Documents\Application\Adapter\FileTextExtractor;
 use App\Core\Modules\Documents\Application\Services\ExtractPaymentCodeService\Exceptions\FailedToExtractPaymentCodeException;
 use App\Core\Modules\Documents\Application\Services\ExtractPaymentCodeService\ExtractPaymentCodeService;
 use App\Core\Modules\Documents\Domain\Entities\Document\Document;
-use App\Core\Modules\Documents\Domain\Entities\PaymentCode\Exceptions\ExtractCodeException;
 use App\Core\Modules\Documents\Domain\Repositories\DocumentRepository;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Input\File;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Input\Input;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Input\PaymentCodeOwner;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Output\Output;
+use App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode\Exceptions\ExtractCodeException;
 
 beforeEach(function () {
     $this->fileTextExtractor = Mockery::mock(FileTextExtractor::class);

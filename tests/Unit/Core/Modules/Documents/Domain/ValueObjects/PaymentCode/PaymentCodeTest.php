@@ -1,7 +1,7 @@
 <?php
 
-use App\Core\Modules\Documents\Domain\Entities\PaymentCode\Exceptions\ExtractCodeException;
-use App\Core\Modules\Documents\Domain\Entities\PaymentCode\PaymentCode;
+use App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode\Exceptions\ExtractCodeException;
+use App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode\PaymentCode;
 
 describe('PaymentCode', function () {
     it('extracts DAS barcode with 48 digits without spaces', function () {

@@ -5,12 +5,12 @@ namespace App\Core\Modules\Documents\Application\Services\ExtractPaymentCodeServ
 use App\Core\Modules\Documents\Application\Adapter\FileTextExtractor;
 use App\Core\Modules\Documents\Application\Services\ExtractPaymentCodeService\Exceptions\FailedToExtractPaymentCodeException;
 use App\Core\Modules\Documents\Domain\Entities\Document\Document;
-use App\Core\Modules\Documents\Domain\Entities\PaymentCode\Exceptions\ExtractCodeException;
-use App\Core\Modules\Documents\Domain\Entities\PaymentCode\PaymentCode;
 use App\Core\Modules\Documents\Domain\Repositories\DocumentRepository;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\ExtractPaymentCodeUseCase;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Input\Input;
 use App\Core\Modules\Documents\Domain\UseCases\ExtractPaymentCodeUseCase\Output\Output;
+use App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode\Exceptions\ExtractCodeException;
+use App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode\PaymentCode;
 
 readonly class ExtractPaymentCodeService implements ExtractPaymentCodeUseCase
 {

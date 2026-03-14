@@ -2,7 +2,7 @@
 
 namespace App\Core\Modules\Documents\Domain\Entities\Document;
 
-use App\Core\Modules\Documents\Domain\Entities\PaymentCode\PaymentCode;
+use App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode\PaymentCode;
 
 readonly class Document
 {

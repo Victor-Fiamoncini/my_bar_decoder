@@ -1,6 +1,6 @@
 <?php
 
-use App\Core\Modules\Documents\Domain\Entities\PaymentCode\PaymentCode;
+use App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode\PaymentCode;
 use App\Core\Modules\Documents\Infrastructure\GoogleVisionFileTextExtractor;
 use Illuminate\Support\Facades\Storage;
 

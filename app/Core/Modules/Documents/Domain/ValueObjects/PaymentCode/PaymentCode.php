@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core\Modules\Documents\Domain\Entities\PaymentCode;
+namespace App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode;
 
-use App\Core\Modules\Documents\Domain\Entities\PaymentCode\Exceptions\ExtractCodeException;
+use App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode\Exceptions\ExtractCodeException;
 
 readonly class PaymentCode
 {
