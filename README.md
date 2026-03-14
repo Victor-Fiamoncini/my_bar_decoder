@@ -55,41 +55,36 @@ sail npm run dev
 
 ## Architecture
 
-The project follows a Clean Architecture approach with Domain-Driven Design (DDD) principles, separating business logic from framework dependencies and infrastructure concerns.
+The project follows Clean Architecture with DDD principles. All domain logic lives under `App\Core\Modules\Documents\`, split into three layers with strict dependency direction: Domain ← Application ← Infrastructure.
 
-### Core Namespace Structure
+### Domain layer
 
-The `\Core` namespace is organized into distinct layers:
+Pure PHP, no framework dependencies. Contains:
 
-```
-App\Core\
-├── 📦 Domain\          # Business logic and entities
-├── ⚙️ Application\     # Use cases and services
-└── 🔌 Infrastructure\  # External dependencies and implementations
-```
+- **`Document` entity** — the aggregate root. Holds `name`, `paymentCode`, `createdAt`, and `ownerId`. Built after a successful extraction and passed to the repository.
+- **`PaymentCode` value object** — wraps the extracted code string. Created via `PaymentCode::tryCreateFromText(string $text)`, which applies regex patterns for two Brazilian formats (DAS 48-digit barcode and standard 47-digit bill code). Throws `ExtractCodeException` if neither matches.
+- **`DocumentRepository` interface** — write port. Single method: `save(Document $document)`.
+- **`ExtractPaymentCodeUseCase` interface** — the use case contract consumed by the UI layer.
 
-### Domain Layer
+### Application layer
 
-Domain entities represent core business concepts with encapsulated business rules:
-- Immutability: Entities use readonly properties to ensure state consistency
-- Value Objects: Properties like `PaymentCode::$code` are protected to maintain invariants
-- Business Rules: Validation and behavior are encapsulated within entities
+Orchestrates domain objects and defines the remaining ports:
 
-Example: `PaymentCode` entity enforces payment code format rules and provides typed access to its properties.
+- **`ExtractPaymentCodeService`** implements `ExtractPaymentCodeUseCase`. Calls `FileTextExtractor` → creates `PaymentCode` → creates `Document` → persists via `DocumentRepository` → returns `Output($document)`. Throws `FailedToExtractPaymentCodeException` when the extractor returns empty text.
+- **`FileTextExtractor` interface** — port for PDF-to-text extraction.
+- **`DocumentDAO` interface** — read-only query port. Exposes `listByOwnerId` for the dashboard listing. Kept separate from `DocumentRepository` to reflect the write/read asymmetry (CQRS-flavoured split).
 
-### Application Layer
+### Infrastructure layer
 
-Application services/use-cases orchestrate domain entities and coordinate business workflows:
-- Single Responsibility: Each service handles one specific use case
-- Dependency Injection: Services depend on interfaces, not concrete implementations
-- Framework Agnostic: No direct Laravel dependencies in service logic
+Concrete implementations, all framework-aware:
 
-### Infrastructure Layer
+- **`EloquentDocumentRepository`** — implements `DocumentRepository::save()`, maps the `Document` entity to the Eloquent model.
+- **`EloquentDocumentDAO`** — implements `DocumentDAO::listByOwnerId()`, returns a paginated Eloquent result.
+- **`GoogleVisionFileTextExtractor`** — implements `FileTextExtractor`. Converts the first PDF page to PNG via Ghostscript, base64-encodes it, and sends it to the Google Vision API (`TEXT_DETECTION`).
 
-Concrete implementations of domain interfaces:
-- Database interactions (Eloquent models/repositories)
-- External API clients
-- OCR services (Google Vision API)
+### UI layer
+
+`App\Livewire\Dashboard` is the only Livewire component. It injects `DocumentDAO` via Livewire's `boot()` hook (not serialised between requests) for reads, and receives `ExtractPaymentCodeUseCase` via method injection in `submit()` for writes.
 
 ----------
 Released in 2025
