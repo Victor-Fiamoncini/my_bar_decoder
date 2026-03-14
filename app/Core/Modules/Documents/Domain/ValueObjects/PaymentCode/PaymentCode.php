@@ -6,44 +6,25 @@ use App\Core\Modules\Documents\Domain\ValueObjects\PaymentCode\Exceptions\Extrac
 
 readonly class PaymentCode
 {
-    public string $code;
-
-    private function __construct() {}
+    private function __construct(public string $code) {}
 
     /**
      * @throws ExtractCodeException
      */
     public static function tryCreateFromText(string $text): self
     {
-        $paymentCode = new PaymentCode;
-        $paymentCode->tryToExtractCodeFromText($text);
-
-        return $paymentCode;
-    }
-
-    /**
-     * @throws ExtractCodeException
-     */
-    private function tryToExtractCodeFromText(string $text): void
-    {
-        // Brazilian DAS Barcode (48 digits)
-        if ($dasCode = $this->extractDasCode($text)) {
-            $this->code = $dasCode;
-
-            return;
+        if ($dasCode = self::extractDasCode($text)) {
+            return new self($dasCode);
         }
 
-        // Brazilian standard Bill Document (47 digits)
-        if ($brazilianBillCode = $this->extractBillCode($text)) {
-            $this->code = $brazilianBillCode;
-
-            return;
+        if ($billCode = self::extractBillCode($text)) {
+            return new self($billCode);
         }
 
         throw new ExtractCodeException;
     }
 
-    private function extractDasCode(string $text): ?string
+    private static function extractDasCode(string $text): ?string
     {
         $dasPattern = '/(\d{11}\s*\d{1}\s*\d{11}\s*\d{1}\s*\d{11}\s*\d{1}\s*\d{11}\s*\d{1})/';
 
@@ -56,7 +37,7 @@ readonly class PaymentCode
         return preg_replace('/[^\d]/', '', $matches[0]);
     }
 
-    private function extractBillCode(string $text): ?string
+    private static function extractBillCode(string $text): ?string
     {
         $standardBillPattern = '/(\d{5}[\.\s]?\d{5}[\.\s]?\d{5}[\.\s]?\d{6}[\.\s]?\d{5}[\.\s]?\d{6}[\.\s]?\d[\.\s]?\d{14})/';
 
